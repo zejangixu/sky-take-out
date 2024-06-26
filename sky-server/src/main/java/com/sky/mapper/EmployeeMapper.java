@@ -22,4 +22,9 @@ public interface EmployeeMapper {
     void insert(Employee employee);
 
     Page<Employee> pageEmployee(String name);
+
+    void updateEmployee(Employee employee);
+
+    @Select("select * from employee where id = #{id}")
+    Employee selectEmployeeById(Long id);
 }
