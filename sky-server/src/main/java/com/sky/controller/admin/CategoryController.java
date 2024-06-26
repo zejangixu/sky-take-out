@@ -25,8 +25,8 @@ public class CategoryController {
         return Result.success();
     }
 
-    public Result<PageResult> page(CategoryPageQueryDTO categoryPageQueryDTO){
-
-    }
+//    public Result<PageResult> page(CategoryPageQueryDTO categoryPageQueryDTO){
+//
+//    }
 
 }
