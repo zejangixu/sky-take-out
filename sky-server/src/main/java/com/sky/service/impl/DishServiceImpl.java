@@ -8,6 +8,7 @@ import com.sky.entity.DishFlavor;
 import com.sky.mapper.DishMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
+import com.sky.vo.DishVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +25,10 @@ public class DishServiceImpl implements DishService {
     @Override
     public PageResult page(DishPageQueryDTO dishPageQueryDTO) {
         PageHelper.startPage(dishPageQueryDTO.getPage(), dishPageQueryDTO.getPageSize());
-        Page<Dish> dishPage = dishMapper.page(dishPageQueryDTO.getName(),dishPageQueryDTO.getCategoryId());
-        List<Dish> list = dishPage.getResult();
+        Dish dish = new Dish();
+        BeanUtils.copyProperties(dishPageQueryDTO,dish);
+        Page<DishVO> dishPage = dishMapper.page(dish);
+        List<DishVO> list = dishPage.getResult();
         return new PageResult(dishPage.getTotal(),list);
     }
 
@@ -46,6 +49,35 @@ public class DishServiceImpl implements DishService {
     @Override
     public void StopOrStart(Long id, Integer status) {
         Dish dish = Dish.builder().id(id).status(status).build();
+        dishMapper.updateDish(dish);
+    }
+
+    @Override
+    public List<Dish> queryDishByCategoryId(Long categoryId) {
+        return dishMapper.queryDishByCategoryId(categoryId);
+    }
+
+    @Override
+    public DishVO findDishById(Long id) {
+        DishVO dishVOS = dishMapper.queryDishVOById(id);
+        List<DishFlavor> dishFlavors = dishMapper.queryFlavorByDishId(id);
+        dishVOS.setFlavors(dishFlavors);
+        return dishVOS;
+    }
+
+    @Override
+    public void updateDish(DishDTO dto) {
+        for (DishFlavor flavor : dto.getFlavors()) {
+            flavor.setDishId(dto.getId());
+        }
+        //删除dishFlavor
+        dishMapper.deleteDishFlavorByDishId(dto.getId());
+        // 插入dishflavor
+
+        dishMapper.insertListDishFlover(dto.getFlavors());
+        //插入dish
+        Dish dish = new Dish();
+        BeanUtils.copyProperties(dto,dish);
         dishMapper.updateDish(dish);
     }
 }
