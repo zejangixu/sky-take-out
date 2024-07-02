@@ -40,4 +40,12 @@
     <delete id="deleteDishFlavorByDishId">
         delete from dish_flavor where dish_id = #{id}
     </delete>
+    <select id="queryDishVOByCategoryId" resultType="com.sky.vo.DishVO">
+        select d.*,c.name as category_name from dish d left join category c on c.id = d.category_id
+        where d.category_id = #{categoryId}
+    </select>
+    <select id="queryDishItemBySetmealId" resultType="com.sky.vo.DishItemVO">
+        select sd.name,sd.copies,d.image,d.description from setmeal_dish sd left join dish d on sd.dish_id = d.id
+        where sd.dish_id = #{id}
+    </select>
 </mapper>
